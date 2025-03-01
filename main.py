@@ -1,11 +1,14 @@
 from fastapi import FastAPI, HTTPException, Path, Query, Body, Depends
 from typing import Optional, List, Dict, Annotated
+
+from pydantic.v1.datetime_parse import time_re
 from sqlalchemy.orm import Session
 
 from models import Base, RawData, SystemInfo
 from database import engine, session_local
 from schemas import RawDataRequest
 
+from datetime import datetime
 
 app = FastAPI()
 
@@ -23,7 +26,7 @@ def get_db():
 @app.post("/post-raw-data/")
 async def create_raw_data(raw_data: RawDataRequest, db: Session = Depends(get_db)):
     for item_data in raw_data.data:
-        db_raw_data = RawData(data=item_data)
+        db_raw_data = RawData(data=item_data, time_date = datetime.now())
         db.add(db_raw_data)
         db.commit()
         db.refresh(db_raw_data)

@@ -1,26 +1,28 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, ForeignKey, JSON, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
+from sqlalchemy.sql import func
 
 class RawData(Base):
     __tablename__ = "Raw_data" #Название таблицы
 
     id = Column(Integer, primary_key=True, index=True) #index=True - позволяет искать по данному параметру
     data = Column(JSON)
+    time_date = Column(DateTime(timezone=True), server_default=func.now())
 
 class SystemInfo(Base):
     __tablename__ = "System_info"  # Название таблицы
 
     id = Column(Integer, primary_key=True, index=True)
-    host = Column(String)#ALL
-    dhcp = Column(String)#ALL
+    host = Column(String)#A
+    dhcp = Column(String)#A
 
 # class SystemInfo(Base):
 #     __tablename__ = "System_info"  # Название таблицы
 #
 #     id = Column(Integer, primary_key=True, index=True)
 #     host = Column(String)  #A
-#     dhcp = Column(String)  #AL
+#     dhcp = Column(String)  #A
 #     addr = Column(String)  #A
 #     kav_ver = Column(String)  #A
 #     kav_base = Column(String)  # A
