@@ -11,8 +11,10 @@ from schemas import RawDataRequest, SystemInfoResponse
 
 from datetime import datetime
 
-app = FastAPI()
 
+
+
+app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 
@@ -37,6 +39,7 @@ async def create_raw_data(raw_data: RawDataRequest, db: Session = Depends(get_db
 
     return {"massage": "Post успешно завершен"}
 
+#Производит пересон данных в таблицу system_info
 def distribution_to_table(data: dict, db: Session):
     host = data.get("host")
     for param, value in data.items():
@@ -51,6 +54,25 @@ async def get_data(host: Annotated[str, Path(..., title="Укажите имя h
                    db: Session = Depends(get_db)):
     params = db.query(SystemInfo).filter(SystemInfo.host == host).all()
     return params
+
+
+@app.get("/get-filtered-system-info/", response_model=List[SystemInfoResponse])
+async def get_filtred_info(hosts: Optional[List[str]] = Query(default = None, title='Укажите host для фильтрации'),
+                           params: Optional[List[str]] = Query(default = None, title='Укажите host для фильтрации'),
+                           values: Optional[List[str]] = Query(default = None, title='Укажите host для фильтрации'),
+                           db: Session = Depends(get_db)):
+    query = db.query(SystemInfo)
+    if hosts:
+        query = query.filter(SystemInfo.host.in_(hosts))
+
+    if params:
+        query = query.filter(SystemInfo.param.in_(params))
+
+    if values:
+        query = query.filter(SystemInfo.param.in_(values))
+
+    return query.all()
+
 
 @app.delete("/delete-data/{host}")
 async def delete_data(host: Annotated[str, Path(..., title="Укажите имя host")],

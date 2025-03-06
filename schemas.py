@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 
-
-from sqlalchemy import Column, Integer, String, ForeignKey, JSON, DateTime
+# from sqlalchemy import Column, Integer, String, ForeignKey, JSON, DateTime
 
 
 class RawDataRequest(BaseModel):
